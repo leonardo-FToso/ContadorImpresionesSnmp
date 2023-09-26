@@ -1,0 +1,30 @@
+[
+    {
+        "ip": "192.168.5.25",
+        "dispositivoId": 5
+    },
+    {
+        "ip": "192.168.5.26",
+        "dispositivoId": 6
+    },
+    {
+        "ip": "192.168.5.28",
+        "dispositivoId": 4
+    },
+    {
+        "ip": "192.168.5.29",
+        "dispositivoId": 1014
+    },
+    {
+        "ip": "192.168.5.107",
+        "dispositivoId": 1013
+    },
+    {
+        "ip": "192.168.5.73",
+        "dispositivoId": 8
+    },
+    {
+        "ip": "192.168.8.200",
+        "dispositivoId": 1019
+    }
+]

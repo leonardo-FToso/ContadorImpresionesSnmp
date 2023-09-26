@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model CompraInsumos {
+  id            Int          @id(map: "PK__CompraIn__3213E83FC2980217") @default(autoincrement())
+  costo         Int
+  cantidad      Int
+  iva           Int
+  total         Int
+  fechaCompra   DateTime     @db.DateTime
+  stockInsumoId Int
+  tiendaId      Int
+  StockInsumos  StockInsumos @relation(fields: [stockInsumoId], references: [id], onUpdate: NoAction, map: "FK__CompraIns__stock__4AB81AF0")
+  Tiendas       Tiendas      @relation(fields: [tiendaId], references: [id], onUpdate: NoAction, map: "FK__CompraIns__tiend__619B8048")
+}
+
+model Dispositivos {
+  id                    Int                     @id(map: "PK__Disposit__3213E83FCB6E3128") @default(autoincrement())
+  marcaId               Int
+  modelo                String                  @db.VarChar(50)
+  ubicacion             String                  @db.VarChar(50)
+  localId               Int
+  numeroSerie           String                  @db.VarChar(40)
+  fechaRegistro         DateTime?               @db.DateTime
+  urlImagen             String?                 @db.VarChar(255)
+  isEthernet            Boolean?
+  ipLocal               String?                 @db.VarChar(15)
+  macAddress            String                  @db.VarChar(17)
+  estadoId              Int?
+  neto                  Int                     @default(0, map: "DF__Dispositiv__neto__6E01572D")
+  iva                   Int                     @default(0, map: "DF__Dispositivo__iva__6EF57B66")
+  total                 Int                     @default(0, map: "DF__Dispositi__total__6FE99F9F")
+  Estados               Estados?                @relation(fields: [estadoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__Dispositi__estad__5CD6CB2B")
+  Locales               Locales                 @relation(fields: [localId], references: [id], onUpdate: NoAction, map: "FK__Dispositi__local__2B3F6F97")
+  Marcas                Marcas                  @relation(fields: [marcaId], references: [id], onUpdate: NoAction, map: "FK__Dispositi__marca__2A4B4B5E")
+  Incidencias           Incidencias[]
+  InsumosDeDispositivos InsumosDeDispositivos[]
+  NumeroImpresiones     NumeroImpresiones[]
+}
+
+model Estados {
+  id           Int            @id(map: "PK__Estados__3213E83F0E29CA5D") @default(autoincrement())
+  estado       String         @db.VarChar(30)
+  Dispositivos Dispositivos[]
+}
+
+model Incidencias {
+  id                         Int                @id(map: "PK__Incidenc__3213E83F7E6AE21C") @default(autoincrement())
+  dispositivoId              Int
+  numeroCopiasImpresora      Int
+  problema                   String             @db.VarChar(100)
+  diagnostico                String?            @db.NVarChar(100)
+  solucion                   String?            @db.NVarChar(100)
+  fechaProblema              DateTime           @db.DateTime
+  fechaRecepcionEspecialista DateTime?          @db.DateTime
+  fechaEntregaEspecialista   DateTime?          @db.DateTime
+  fechaDiagnostico           DateTime?          @db.DateTime
+  fechaSolucion              DateTime?          @db.DateTime
+  costoReparacionNeto        Int?
+  ivaReparacion              Int?
+  totalReparacion            Int?
+  localReparacionId          Int?
+  Dispositivos               Dispositivos       @relation(fields: [dispositivoId], references: [id], onUpdate: NoAction, map: "FK__Incidenci__dispo__2E1BDC42")
+  LocalesReparacion          LocalesReparacion? @relation(fields: [localReparacionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__Incidenci__local__46E78A0C")
+}
+
+model InsumosDeDispositivos {
+  insumoId      Int
+  dispositivoId Int
+  Dispositivos  Dispositivos @relation(fields: [dispositivoId], references: [id], onUpdate: NoAction, map: "FK__InsumosDe__dispo__49C3F6B7")
+  StockInsumos  StockInsumos @relation(fields: [insumoId], references: [id], onUpdate: NoAction, map: "FK__InsumosDe__insum__48CFD27E")
+
+  @@unique([insumoId, dispositivoId], map: "_InsumosDeDispositivos_insumoIdDispositivoId_unique")
+  @@index([dispositivoId], map: "_InsumosDeDispositivos_dispositivoId_index")
+}
+
+model Locales {
+  id           Int            @id(map: "PK__Locales__3213E83FC66B501E") @default(autoincrement())
+  localFT      String         @db.VarChar(2)
+  Dispositivos Dispositivos[]
+}
+
+model LocalesReparacion {
+  id          Int           @id(map: "PK__LocalesR__3213E83FC0EB439C") @default(autoincrement())
+  nombre      String        @db.NVarChar(30)
+  giro        String        @db.NVarChar(40)
+  rut         String        @db.VarChar(10)
+  direccion   String        @db.VarChar(50)
+  telefono    String        @db.VarChar(10)
+  correo      String?       @db.NVarChar(50)
+  Incidencias Incidencias[]
+}
+
+model Marcas {
+  id           Int            @id(map: "PK__Marcas__3213E83FE2D68167") @default(autoincrement())
+  marca        String         @db.VarChar(30)
+  Dispositivos Dispositivos[]
+  StockInsumos StockInsumos[]
+}
+
+model NumeroImpresiones {
+  id            Int          @id(map: "PK_NumeroImpresiones") @default(autoincrement())
+  impresiones   Int
+  fecha         DateTime     @db.Date
+  dispositivoId Int
+  Dispositivos  Dispositivos @relation(fields: [dispositivoId], references: [id], onUpdate: NoAction, map: "FK__NumeroImp__dispo__71D1E811")
+}
+
+model StockInsumos {
+  id                    Int                     @id(map: "PK__StockIns__3213E83FB0EB2F98") @default(autoincrement())
+  tipoInsumoId          Int
+  marcaId               Int
+  descripcion           String                  @db.VarChar(30)
+  cantidadEnStock       Int
+  cantidadMinima        Int
+  CompraInsumos         CompraInsumos[]
+  InsumosDeDispositivos InsumosDeDispositivos[]
+  Marcas                Marcas                  @relation(fields: [marcaId], references: [id], onUpdate: NoAction, map: "FK__StockInsu__marca__3A81B327")
+  TipoInsumos           TipoInsumos             @relation(fields: [tipoInsumoId], references: [id], onUpdate: NoAction, map: "FK__StockInsu__tipoI__398D8EEE")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61D79A7A52") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Tiendas {
+  id            Int             @id(map: "PK__tiendas__3213E83F8639A095") @default(autoincrement())
+  nombreTienda  String          @db.NVarChar(30)
+  telefono      String          @db.NVarChar(9)
+  correo        String?         @db.NVarChar(40)
+  direccion     String?         @db.NVarChar(60)
+  geo           String?         @db.NVarChar(50)
+  CompraInsumos CompraInsumos[]
+}
+
+model TipoInsumos {
+  id           Int            @id(map: "PK__TipoInsu__3213E83FFD731763") @default(autoincrement())
+  insumo       String         @db.VarChar(30)
+  StockInsumos StockInsumos[]
+}
