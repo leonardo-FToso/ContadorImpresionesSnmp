@@ -2,7 +2,7 @@
 import { Prisma } from "@prisma/client";
 
 export interface Impresora {
-    ip: string
+    ip?: string
     dispositivoId: number
 }
 

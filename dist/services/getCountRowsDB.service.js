@@ -9,15 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertCopiasInDB = void 0;
+exports.deteleFromAllasterisco = exports.getRowsTable = void 0;
 const db_server_1 = require("../utils/db.server");
-function insertCopiasInDB(datos) {
+function getRowsTable() {
     return __awaiter(this, void 0, void 0, function* () {
-        //console.log("%c insertCopiasImpresoras: params",  datos.dispositivoId, " ", datos.impresiones, "color: blue;")
         try {
-            const response = yield db_server_1.db.numeroImpresiones.createMany({
-                data: datos,
-            });
+            const response = yield db_server_1.db.numeroImpresiones.count();
             return response;
         }
         catch (error) {
@@ -26,4 +23,16 @@ function insertCopiasInDB(datos) {
         }
     });
 }
-exports.insertCopiasInDB = insertCopiasInDB;
+exports.getRowsTable = getRowsTable;
+function deteleFromAllasterisco() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield db_server_1.db.numeroImpresiones.deleteMany({});
+            return response.count;
+        }
+        catch (error) {
+            console.log("deteleFromAllasterisco: ", error);
+        }
+    });
+}
+exports.deteleFromAllasterisco = deteleFromAllasterisco;

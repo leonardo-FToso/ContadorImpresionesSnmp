@@ -1,19 +1,12 @@
 import { CreateNumeroImpresiones } from "../types/impresora"
 import { db } from "../utils/db.server"
 
-export async function insertCopiasInDB(datos: CreateNumeroImpresiones) {
-    console.log("insertCopiasImpresoras: params",  datos.dispositivoId, " ", datos.impresiones)
+export async function insertCopiasInDB(datos: CreateNumeroImpresiones[]) {
+    //console.log("%c insertCopiasImpresoras: params",  datos.dispositivoId, " ", datos.impresiones, "color: blue;")
 
     try {
-        const response = await db.numeroImpresiones.create({
-            data: {
-                fecha: datos.fecha,
-                dispositivoId: datos.dispositivoId,
-                impresiones: datos.impresiones            
-            },
-            select: {
-                id: true,
-            }
+        const response = await db.numeroImpresiones.createMany({
+            data: datos,                        
         })
         return response
     } catch (error) {
